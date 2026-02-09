@@ -149,6 +149,7 @@ export default function FlashcardDeck({
           <div className="flip-face">
             <h2 style={{ marginBottom: 8 }}>{current.lemma}</h2>
             <p>{current.phonetics}</p>
+            {current.pos && <span className="badge">POS: {current.pos}</span>}
           </div>
           <div className="flip-face flip-back">
             {definitionLang !== "zh" && (
@@ -157,6 +158,7 @@ export default function FlashcardDeck({
             {definitionLang !== "en" && (
               <h3>ZH: {getWordDefinition(current, proMode).zh}</h3>
             )}
+            {current.pos && <p>POS: {current.pos}</p>}
             <p>{current.example}</p>
           </div>
         </div>

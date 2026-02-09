@@ -178,3 +178,57 @@ Updates for Version 3 feedback + Version 4 tasks:
 - Progress bars added for Flashcards, Reading, and Practice with percentages.
 - Pro mode added with toggle (header + Settings), advanced words, pro definitions, and smarter ability update.
 - Pro mode styling uses black/grey theme with smooth mode-switch animation.
+Feedback:
+- At normal mode, the button used to switch to pro mode can not be seen, no letter displayed on the button
+- UI of the Pro mode is too simple, make every button shines with a flow of energy, make it more energizing and cool. Energy color can be green. Give a metallic texture and carbon-fibre texure. Sci-fiction style
+- Make the animation more fancy, make the people who "spend money" on the pro mode feel worth of it. 
+Feedback
+- make note and mistake session only avaliable in pro-mode, in normal mode, user cannot access to these two functions
+- translation in paragraph reading is still not avaliable, it appears "no definition seemed" fix it. 
+- remove carbon-fibre texture from the pro-mode UI, it is disturbing, make the UI dark-gray instead of pure black
+Version 4.1 (debug & improvements)
+- Users may require the function of adding individual words into notes and mistakes seperately. 
+- Eventhough the words in basket are paired with their definitions, after adding them into mistakes and notes, the definitions are gone, keep the definition, or even make more detailed definitions in notes and mistaks, as there are more spaces.
+- Make normal mode animations(flipping of flash cards, adding of words into the basket...) slightly slower, but keep the fluence. Keep the pace of animations in pro mode, to show the pro mode is faster and more efficient in contrast with normal mode.
+Version 4.2 (improvements)
+- Still show definitions of words in normal mode, just don't allow it to be added into notes and mistakes
+- If each single word can be added into notes and mistakes individually, then change the add into notes and mistakes on the right corner into "add all into notes/mistakes", keep two functions: 1. add indidual 2. add all in once
+- make normal mode animation more slower, keep it fluent
+- show possesses of words(n.,adj.v.adv. ...) in all places (flash cards, definitions , notes, mistakes)
+- in pro mode, make the selection of choices more observable and obvious in MCQ questions, not just slightly brighter than others, maybe change all button into green
+- only dislplay "check" before the user checked his answer, then display "next"
+
+Updates for Version 4.2:
+- Normal mode shows definitions but disables adding to Notes/Mistakes.
+- Basket controls renamed to “Add all to Notes/Mistakes” while per-word “Add this” remains.
+- Normal mode animations slowed; Pro mode remains faster.
+- POS is shown in flashcards, basket definitions, notes, and mistakes.
+- Pro mode MCQ selection highlights are more obvious (green high contrast).
+- Practice flow shows only “Check” before validation, then “Next/Finish”.
+
+Updates for Version 5:
+- Added placement test gate before Home with skip-to-2000 default vocab.
+- Placement test can be retaken anytime; mini test prompts after 10 days.
+- Ranking system implemented with rank tiers and a local friends leaderboard.
+- Rank + vocab estimate displayed in header and Home.
+
+Updates for Version 5
+1. Let the user choose a cource(IG/IB/IELTS/TOFEL), before the user enters the home page, give the user a test, and output the estimated english level of his, in terms of vocabulary number. The user can cancel it, then his default level is around 2000. The test can be done at anytimes, by clicking on a button, for unlimited times. And after every 10 days of using, there will be a mini-test to update the user's vocabulary level. 
+2. Add ranking system
+| Rank            | Mastery Words (MW) estimated range |
+| --------------- | ---------------------------------: |
+| **Rookie**      |                              0–200 |
+| **Bronze I**    |                            200–400 |
+| **Bronze II**   |                            400–650 |
+| **Silver I**    |                            650–900 |
+| **Silver II**   |                          900–1,200 |
+| **Gold I**      |                        1,200–1,600 |
+| **Gold II**     |                        1,600–2,100 |
+| **Platinum I**  |                        2,100–2,800 |
+| **Platinum II** |                        2,800–3,600 |
+| **Diamond I**   |                        3,600–4,800 |
+| **Diamond II**  |                        4,800–6,200 |
+| **Master**      |                        6,200–8,000 |
+| **Grandmaster** |                       8,000–10,500 |
+| **Legend**      |                     10,500–14,000+ |
+3. Add ranking lists among related users, they are connnect by sign up/in and add friend

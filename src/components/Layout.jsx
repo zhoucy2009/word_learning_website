@@ -1,11 +1,12 @@
 import React from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useApp } from "../AppContext.jsx";
 import {
   getCourseById,
   getCourses,
   getDailyProgress,
-  estimateVocabSize,
+  getRankByVocab,
+  getVocabEstimate,
   setCourse
 } from "../data/logic.js";
 import { setSettings } from "../data/logic.js";
@@ -15,6 +16,7 @@ const navItems = [
   { to: "/flashcards", label: "Flashcards" },
   { to: "/reading", label: "Guided Reading" },
   { to: "/practice", label: "Practice" },
+  { to: "/rankings", label: "Rankings" },
   { to: "/notes", label: "Notes" },
   { to: "/mistakes", label: "Mistakes" },
   { to: "/settings", label: "Settings" }
@@ -22,11 +24,16 @@ const navItems = [
 
 export default function Layout() {
   const { state, refresh } = useApp();
+  const location = useLocation();
+  if (!state.user.hasPlacement && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" replace />;
+  }
   const course = getCourseById(state.user.courseId);
   const courses = getCourses();
   const proMode = state.user.settings.proMode;
-  const ability = state.user.abilityByCourse[state.user.courseId] || 0;
+  const vocabEstimate = getVocabEstimate(state, state.user.courseId);
   const progress = getDailyProgress(state, state.user.courseId);
+  const rank = getRankByVocab(vocabEstimate);
 
   return (
     <div className={`app-shell ${proMode ? "pro" : ""}`}>
@@ -84,10 +91,10 @@ export default function Layout() {
       <main>
         <div className="flex" style={{ marginBottom: 16, flexWrap: "wrap" }}>
           <span className="badge">Course: {course.name}</span>
-          <span className="badge">Ability rank: {ability}</span>
+          <span className="badge">Rank: {rank}</span>
           <span className="badge">Today learned: {progress.learnedToday}</span>
           <span className="badge">
-            Estimated vocab: {estimateVocabSize(ability)}
+            Estimated vocab: {vocabEstimate}
           </span>
         </div>
         <div className="page">

@@ -39,12 +39,26 @@ export default function BasketBar({ basketIds, courseId, onUpdate, proMode }) {
     onUpdate();
   };
 
-  const handleAddNotes = () => {
+  const handleAddNotes = (wordId) => {
+    if (!proMode) return;
+    addToNotes(wordId);
+    onUpdate();
+  };
+
+  const handleAddMistakes = (wordId) => {
+    if (!proMode) return;
+    addToMistakes(wordId);
+    onUpdate();
+  };
+
+  const handleAddAllNotes = () => {
+    if (!proMode) return;
     basketIds.forEach((wordId) => addToNotes(wordId));
     onUpdate();
   };
 
-  const handleAddMistakes = () => {
+  const handleAddAllMistakes = () => {
+    if (!proMode) return;
     basketIds.forEach((wordId) => addToMistakes(wordId));
     onUpdate();
   };
@@ -89,11 +103,11 @@ export default function BasketBar({ basketIds, courseId, onUpdate, proMode }) {
         <button onClick={() => handleTranslate("en")}>Translate EN</button>
         <button onClick={() => handleTranslate("zh")}>Translate ZH</button>
         <button onClick={() => handleTranslate("both")}>Translate EN+ZH</button>
-        <button className="secondary" onClick={handleAddNotes}>
-          Add to Notes
+        <button className="secondary" onClick={handleAddAllNotes} disabled={!proMode}>
+          Add all to Notes
         </button>
-        <button className="secondary" onClick={handleAddMistakes}>
-          Add to Mistakes
+        <button className="secondary" onClick={handleAddAllMistakes} disabled={!proMode}>
+          Add all to Mistakes
         </button>
       </div>
       {translated && basketIds.length > 0 && (
@@ -107,17 +121,46 @@ export default function BasketBar({ basketIds, courseId, onUpdate, proMode }) {
                 <strong>{label}</strong>
                 {word ? (
                   <>
-                    {mode !== "zh" && <div>EN: {getWordDefinition(word, proMode).en}</div>}
-                    {mode !== "en" && <div>ZH: {getWordDefinition(word, proMode).zh}</div>}
+                    {mode !== "zh" && (
+                      <div className="definition-text">
+                        EN: {getWordDefinition(word, proMode).en}
+                      </div>
+                    )}
+                    {mode !== "en" && (
+                      <div className="definition-text">
+                        ZH: {getWordDefinition(word, proMode).zh}
+                      </div>
+                    )}
+                    {word.pos && <div className="definition-text">POS: {word.pos}</div>}
                   </>
                 ) : fallback ? (
                   <>
-                    {mode !== "zh" && <div>EN: {fallback.en}</div>}
-                    {mode !== "en" && <div>ZH: {fallback.zh}</div>}
+                    {mode !== "zh" && (
+                      <div className="definition-text">EN: {fallback.en}</div>
+                    )}
+                    {mode !== "en" && (
+                      <div className="definition-text">ZH: {fallback.zh}</div>
+                    )}
                   </>
                 ) : (
                   <div>Definition not available.</div>
                 )}
+                <div className="flex" style={{ marginTop: 8, flexWrap: "wrap" }}>
+                  <button
+                    className="secondary"
+                    onClick={() => handleAddNotes(wordId)}
+                    disabled={!proMode}
+                  >
+                    Add this to Notes
+                  </button>
+                  <button
+                    className="secondary"
+                    onClick={() => handleAddMistakes(wordId)}
+                    disabled={!proMode}
+                  >
+                    Add this to Mistakes
+                  </button>
+                </div>
               </div>
             );
           })}

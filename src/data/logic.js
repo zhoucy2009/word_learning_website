@@ -16,6 +16,42 @@ export function getCourseById(courseId) {
   return courses.find((course) => course.id === courseId) || courses[0];
 }
 
+export function abilityToVocab(ability) {
+  return Math.max(2000, Math.round(2000 + ability * 12));
+}
+
+export function vocabToAbility(vocab) {
+  return Math.max(0, Math.round((vocab - 2000) / 12));
+}
+
+export function getVocabEstimate(state, courseId) {
+  return (
+    state.user.vocabEstimateByCourse?.[courseId] ||
+    abilityToVocab(state.user.abilityByCourse?.[courseId] || 0)
+  );
+}
+
+export function getRankByVocab(vocab) {
+  const tiers = [
+    { name: "Rookie", min: 0, max: 200 },
+    { name: "Bronze I", min: 200, max: 400 },
+    { name: "Bronze II", min: 400, max: 650 },
+    { name: "Silver I", min: 650, max: 900 },
+    { name: "Silver II", min: 900, max: 1200 },
+    { name: "Gold I", min: 1200, max: 1600 },
+    { name: "Gold II", min: 1600, max: 2100 },
+    { name: "Platinum I", min: 2100, max: 2800 },
+    { name: "Platinum II", min: 2800, max: 3600 },
+    { name: "Diamond I", min: 3600, max: 4800 },
+    { name: "Diamond II", min: 4800, max: 6200 },
+    { name: "Master", min: 6200, max: 8000 },
+    { name: "Grandmaster", min: 8000, max: 10500 },
+    { name: "Legend", min: 10500, max: Infinity }
+  ];
+  const match = tiers.find((tier) => vocab >= tier.min && vocab < tier.max);
+  return match ? match.name : "Rookie";
+}
+
 export function getWordsForCourse(courseId, options = {}) {
   const { proMode = false } = options;
   const baseIds = courseWordMap[courseId] || [];
@@ -78,7 +114,61 @@ export function setSettings(updates) {
 export function setAbility(courseId, ability) {
   return updateState((state) => {
     state.user.abilityByCourse[courseId] = ability;
+    state.user.vocabEstimateByCourse[courseId] = abilityToVocab(ability);
   });
+}
+
+export function setVocabEstimate(courseId, vocab) {
+  return updateState((state) => {
+    state.user.vocabEstimateByCourse[courseId] = vocab;
+    state.user.abilityByCourse[courseId] = vocabToAbility(vocab);
+  });
+}
+
+export function markPlacementComplete({ courseId, vocab, isMiniTest }) {
+  return updateState((state) => {
+    state.user.hasPlacement = true;
+    state.user.vocabEstimateByCourse[courseId] = vocab;
+    state.user.abilityByCourse[courseId] = vocabToAbility(vocab);
+    const now = new Date().toISOString();
+    if (isMiniTest) {
+      state.user.lastMiniTestDate = now;
+    } else {
+      state.user.lastPlacementDate = now;
+    }
+  });
+}
+
+export function shouldPromptMiniTest(state) {
+  const lastTest = state.user.lastMiniTestDate || state.user.lastPlacementDate;
+  if (!lastTest) return false;
+  const diff = Date.now() - new Date(lastTest).getTime();
+  const days = diff / (1000 * 60 * 60 * 24);
+  return days >= 10;
+}
+
+export function addFriend(name, vocabEstimate) {
+  return updateState((state) => {
+    const id = `friend_${Date.now()}`;
+    state.friends.push({ id, name, vocabEstimate });
+  });
+}
+
+export function removeFriend(friendId) {
+  return updateState((state) => {
+    state.friends = state.friends.filter((friend) => friend.id !== friendId);
+  });
+}
+
+export function getRankingList(state, courseId) {
+  const myVocab = getVocabEstimate(state, courseId);
+  const items = [
+    { id: "me", name: "You", vocabEstimate: myVocab },
+    ...state.friends
+  ];
+  return items
+    .map((item) => ({ ...item, rank: getRankByVocab(item.vocabEstimate) }))
+    .sort((a, b) => b.vocabEstimate - a.vocabEstimate);
 }
 
 export function addToBasket(wordId) {
@@ -101,25 +191,25 @@ export function clearBasket() {
 
 export function addToNotes(wordId) {
   return updateState((state) => {
-    if (!state.notes.includes(wordId)) state.notes.push(wordId);
+    addToCollection(state, "notes", wordId);
   });
 }
 
 export function addToMistakes(wordId) {
   return updateState((state) => {
-    if (!state.mistakes.includes(wordId)) state.mistakes.push(wordId);
+    addToCollection(state, "mistakes", wordId);
   });
 }
 
-export function removeFromNotes(wordId) {
+export function removeFromNotes(itemId) {
   return updateState((state) => {
-    state.notes = state.notes.filter((id) => id !== wordId);
+    state.notes = state.notes.filter((item) => item.id !== itemId);
   });
 }
 
-export function removeFromMistakes(wordId) {
+export function removeFromMistakes(itemId) {
   return updateState((state) => {
-    state.mistakes = state.mistakes.filter((id) => id !== wordId);
+    state.mistakes = state.mistakes.filter((item) => item.id !== itemId);
   });
 }
 
@@ -156,9 +246,7 @@ export function recordPractice(courseId, items, results) {
           lastSeenAt: now
         });
       } else {
-        if (!state.mistakes.includes(result.wordId)) {
-          state.mistakes.push(result.wordId);
-        }
+        addToCollection(state, "mistakes", result.wordId);
         updateWordState(state, courseId, result.wordId, {
           status: "interacted",
           lastSeenAt: now
@@ -183,13 +271,16 @@ export function getDailyProgress(state, courseId) {
 }
 
 export function estimateVocabSize(abilityRank) {
-  return Math.round(abilityRank * 3);
+  return abilityToVocab(abilityRank);
 }
 
 export function selectFlashcardWords(courseId, abilityRank, size, state, proMode = false) {
-  const candidates = getWordsForCourse(courseId, { proMode })
-    .map((word) => ({ word, state: getWordState(state, courseId, word.id) }))
-    .filter((entry) => entry.state.status !== "learned");
+  const all = getWordsForCourse(courseId, { proMode }).map((word) => ({
+    word,
+    state: getWordState(state, courseId, word.id)
+  }));
+  const candidates = all.filter((entry) => entry.state.status !== "learned");
+  const learned = all.filter((entry) => entry.state.status === "learned");
   const targetWindow = proMode ? 120 : 80;
   const filtered = candidates.filter(
     (entry) => Math.abs(entry.word.difficulty - abilityRank) <= targetWindow
@@ -197,6 +288,15 @@ export function selectFlashcardWords(courseId, abilityRank, size, state, proMode
   const pool = filtered.length ? filtered : candidates;
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, size).map((entry) => entry.word);
+
+  if (selected.length < size && learned.length) {
+    const review = [...learned]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, size - selected.length)
+      .map((entry) => entry.word);
+    selected.push(...review);
+  }
+
   if (proMode) {
     return selected.sort((a, b) => b.difficulty - a.difficulty);
   }
@@ -256,6 +356,50 @@ export function getDefinitionByToken(token, proMode = false) {
   const match = words.find((word) => word.lemma.toLowerCase() === normalized);
   if (match) return getWordDefinition(match, proMode);
   return extraDefinitions[normalized] || null;
+}
+
+function buildDefinitionSnapshot(wordId, proMode) {
+  if (wordId.startsWith("raw:")) {
+    const token = wordId.replace("raw:", "");
+    const fallback = getDefinitionByToken(token, proMode);
+    return {
+      en: fallback?.en || "Definition not available.",
+      zh: fallback?.zh || "暂无释义",
+      pos: null,
+      phonetics: null,
+      example: null
+    };
+  }
+  const word = getWordById(wordId);
+  if (!word) {
+    return {
+      en: "Definition not available.",
+      zh: "暂无释义",
+      pos: null,
+      phonetics: null,
+      example: null
+    };
+  }
+  const definition = getWordDefinition(word, proMode);
+  return {
+    en: definition.en,
+    zh: definition.zh,
+    pos: word.pos || null,
+    phonetics: word.phonetics || null,
+    example: word.example || null
+  };
+}
+
+function addToCollection(state, collection, wordId) {
+  const exists = state[collection].some((item) => item.wordId === wordId);
+  if (exists) return;
+  const now = new Date().toISOString();
+  state[collection].push({
+    id: `${collection}_${Date.now()}_${wordId}`,
+    wordId,
+    definition: buildDefinitionSnapshot(wordId, state.user.settings.proMode),
+    createdAt: now
+  });
 }
 
 export function buildMcqItem(word, allWords, proMode = false) {
