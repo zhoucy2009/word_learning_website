@@ -10,6 +10,7 @@ import Practice from "./pages/Practice.jsx";
 import Notes from "./pages/Notes.jsx";
 import Mistakes from "./pages/Mistakes.jsx";
 import Settings from "./pages/Settings.jsx";
+import Rankings from "./pages/Rankings.jsx";
 import { getState, updateState } from "./data/logic.js";
 
 export default function App() {
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/flashcards" element={<Flashcards />} />
           <Route path="/reading" element={<Reading />} />
           <Route path="/practice" element={<Practice />} />
+          <Route path="/rankings" element={<Rankings />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/mistakes" element={<Mistakes />} />
           <Route path="/settings" element={<Settings />} />

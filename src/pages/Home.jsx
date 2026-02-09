@@ -1,26 +1,50 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../AppContext.jsx";
-import { estimateVocabSize, getCourseById, getDailyProgress } from "../data/logic.js";
+import {
+  getCourseById,
+  getDailyProgress,
+  getRankByVocab,
+  getVocabEstimate,
+  shouldPromptMiniTest
+} from "../data/logic.js";
+import { Navigate } from "react-router-dom";
 
 export default function Home() {
   const { state } = useApp();
   const course = getCourseById(state.user.courseId);
-  const ability = state.user.abilityByCourse[state.user.courseId] || 0;
+  const vocabEstimate = getVocabEstimate(state, state.user.courseId);
   const progress = getDailyProgress(state, state.user.courseId);
   const proMode = state.user.settings.proMode;
+  const rank = getRankByVocab(vocabEstimate);
+  const needsMiniTest = shouldPromptMiniTest(state);
+
+  if (!state.user.hasPlacement) {
+    return <Navigate to="/onboarding" replace />;
+  }
 
   return (
     <div className="stack">
       <div className="card">
         <h2>Welcome back</h2>
         <p>
-          Current course: <strong>{course.name}</strong>. Your estimated vocabulary size
-          is <strong>{estimateVocabSize(ability)}</strong> words.
+          Current course: <strong>{course.name}</strong>. Estimated vocabulary size is{" "}
+          <strong>{vocabEstimate}</strong> words.
         </p>
         <div className="flex" style={{ flexWrap: "wrap" }}>
+          <span className="badge">Rank: {rank}</span>
           <span className="badge">Today interacted: {progress.interactedToday}</span>
           <span className="badge">Today learned: {progress.learnedToday}</span>
+        </div>
+        <div className="flex" style={{ flexWrap: "wrap", marginTop: 12 }}>
+          <Link to="/onboarding">
+            <button className="secondary">Take placement test</button>
+          </Link>
+          {needsMiniTest && (
+            <Link to="/onboarding" state={{ mode: "mini" }}>
+              <button>Mini test due</button>
+            </Link>
+          )}
         </div>
       </div>
 

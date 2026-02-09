@@ -35,6 +35,9 @@ a {
   display: flex;
   flex-direction: column;
   transition: background 0.5s ease, color 0.5s ease;
+  --motion-fast: 0.42s;
+  --motion-med: 0.85s;
+  --motion-slow: 1.1s;
 }
 
 header {
@@ -73,7 +76,7 @@ main {
 }
 
 .page {
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn var(--motion-med) ease;
 }
 
 .card {
@@ -81,7 +84,7 @@ main {
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(28, 43, 36, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .card:hover {
@@ -106,7 +109,8 @@ button {
   color: #fff;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease,
+    opacity var(--motion-fast) ease;
 }
 
 button:hover {
@@ -129,6 +133,17 @@ button.danger {
   background: var(--danger-500);
 }
 
+.choice {
+  background: transparent;
+  color: var(--forest-700);
+  border: 1px solid var(--forest-500);
+}
+
+.choice.selected {
+  background: var(--forest-500);
+  color: #fff;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -148,7 +163,7 @@ button.danger {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
   position: relative;
 }
 
@@ -179,7 +194,7 @@ button.danger {
 }
 
 .flip-inner {
-  transition: transform 0.5s;
+  transition: transform var(--motion-slow);
   transform-style: preserve-3d;
   position: relative;
   min-height: 220px;
@@ -216,7 +231,7 @@ button.danger {
   padding: 16px;
   border-radius: 16px;
   box-shadow: 0 12px 28px rgba(28, 43, 36, 0.2);
-  animation: slideUp 0.35s ease;
+  animation: slideUp var(--motion-med) ease;
 }
 
 .word-chip {
@@ -229,7 +244,7 @@ button.danger {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .word-chip:hover {
@@ -276,10 +291,18 @@ header button.ghost {
   border-radius: 12px;
   background: var(--neutral-200);
 }
+
+.definition-text {
+  color: var(--forest-500);
+  font-weight: 600;
+}
 .app-shell.pro {
   background: #14171d;
   color: #e6e7ea;
   animation: modeSwitch 0.6s ease;
+  --motion-fast: 0.18s;
+  --motion-med: 0.32s;
+  --motion-slow: 0.55s;
   background-image:
     radial-gradient(circle at 20% 20%, rgba(40, 243, 122, 0.08), transparent 45%),
     radial-gradient(circle at 80% 10%, rgba(40, 243, 122, 0.06), transparent 45%),
@@ -338,6 +361,10 @@ header button.ghost {
   border: 1px solid rgba(40, 243, 122, 0.15);
 }
 
+.app-shell.pro .definition-text {
+  color: #1de377;
+}
+
 .app-shell.pro .word-chip {
   background: #1b2028;
   color: #e6e7ea;
@@ -354,15 +381,37 @@ header button.ghost {
   border-color: #4a5568;
 }
 
+.app-shell.pro .choice {
+  color: #e6e7ea;
+  border-color: rgba(40, 243, 122, 0.6);
+}
+
+.app-shell.pro .choice.selected {
+  background: #1de377;
+  color: #0b0f14;
+  box-shadow: 0 0 14px rgba(40, 243, 122, 0.6);
+}
+
 .app-shell.pro button {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 40%),
     linear-gradient(135deg, #1b2028, #2c3542);
   color: #e6e7ea;
   border: 1px solid rgba(40, 243, 122, 0.35);
-  box-shadow: 0 0 10px rgba(40, 243, 122, 0.25);
+  box-shadow: 0 0 8px rgba(40, 243, 122, 0.25);
   position: relative;
   overflow: hidden;
+}
+
+.choice.selected {
+  background: var(--forest-500);
+  color: #fff;
+}
+
+.app-shell.pro .choice.selected {
+  background: #1de377;
+  color: #0b0f14;
+  box-shadow: 0 0 12px rgba(40, 243, 122, 0.5);
 }
 
 .app-shell.pro button:hover {

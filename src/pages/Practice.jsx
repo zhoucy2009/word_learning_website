@@ -140,9 +140,7 @@ export default function Practice() {
           {current.options.map((option) => (
             <button
               key={option}
-              className={
-                answers[currentIndex]?.value === option ? "secondary" : "ghost"
-              }
+              className={`choice ${answers[currentIndex]?.value === option ? "selected" : ""}`}
               onClick={() => handleAnswer(option)}
               disabled={isChecked}
             >
@@ -169,12 +167,15 @@ export default function Practice() {
           Reset
         </button>
         <div className="flex">
-          <button className="ghost" onClick={handleCheck}>
-            Check
-          </button>
-          <button onClick={handleNext} disabled={!isChecked}>
-            {currentIndex < items.length - 1 ? "Next" : "Finish"}
-          </button>
+          {!isChecked ? (
+            <button className="ghost" onClick={handleCheck}>
+              Check
+            </button>
+          ) : (
+            <button onClick={handleNext}>
+              {currentIndex < items.length - 1 ? "Next" : "Finish"}
+            </button>
+          )}
         </div>
       </div>
     </div>
