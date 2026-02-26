@@ -232,3 +232,8 @@ Updates for Version 5
 | **Grandmaster** |                       8,000–10,500 |
 | **Legend**      |                     10,500–14,000+ |
 3. Add ranking lists among related users, they are connnect by sign up/in and add friend
+
+Version 5.1 (2026.2.26)
+- Flashcards “New Session” now prioritizes completely unseen words (status=unseen) for each course.
+- If there are not enough unseen words to fill the session, the system falls back to partially seen but not yet learned words, and only then uses learned words for review.
+- This makes each new session feel fresher and reduces repetition of previously seen cards.
