@@ -1,6 +1,12 @@
 import React from "react";
 import { useApp } from "../AppContext.jsx";
-import { selectFlashcardWords } from "../data/logic.js";
+import {
+  selectFlashcardWords,
+  getState,
+  updateState,
+  getWordState,
+  updateWordState
+} from "../data/logic.js";
 import FlashcardDeck from "../components/FlashcardDeck.jsx";
 
 export default function Flashcards() {
@@ -10,27 +16,35 @@ export default function Flashcards() {
   const sessionSize = state.user.settings.sessionSize;
   const definitionLang = state.user.settings.definitionLang;
   const proMode = state.user.settings.proMode;
-  const [sessionWords, setSessionWords] = React.useState(() =>
-    selectFlashcardWords(courseId, ability, sessionSize, state, proMode)
-  );
+
+  const generateSession = () => {
+    const freshState = getState();
+    const words = selectFlashcardWords(courseId, ability, sessionSize, freshState, proMode);
+    updateState((draft) => {
+      words.forEach((word) => {
+        const ws = getWordState(draft, courseId, word.id);
+        if (ws.status === "unseen") {
+          updateWordState(draft, courseId, word.id, { status: "interacted" });
+        }
+      });
+    });
+    return words;
+  };
+
+  const [sessionWords, setSessionWords] = React.useState(() => generateSession());
 
   React.useEffect(() => {
-    setSessionWords(selectFlashcardWords(courseId, ability, sessionSize, state, proMode));
-  }, [courseId, ability, sessionSize, proMode]);
+    setSessionWords(generateSession());
+  }, [courseId, sessionSize, proMode]);
+
+  const handleNewSession = () => {
+    setSessionWords(generateSession());
+    refresh();
+  };
 
   return (
     <div className="stack">
-      <div className="flex" style={{ justifyContent: "space-between" }}>
-        <h2>Flashcard Drill</h2>
-        <button
-          className="secondary"
-          onClick={() =>
-            setSessionWords(selectFlashcardWords(courseId, ability, sessionSize, state, proMode))
-          }
-        >
-          New Session
-        </button>
-      </div>
+      <h2>Flashcard Drill</h2>
       <FlashcardDeck
         words={sessionWords}
         courseId={courseId}
@@ -39,13 +53,11 @@ export default function Flashcards() {
         state={state}
         definitionLang={definitionLang}
         proMode={proMode}
-        onRestart={() =>
-          setSessionWords(selectFlashcardWords(courseId, ability, sessionSize, state, proMode))
-        }
+        onRestart={handleNewSession}
       />
       <div className="notice">
         <p>
-          Rule: a word becomes learned when you select “I know this” or answer it
+          Rule: a word becomes learned when you select "I know this" or answer it
           correctly in practice. Flipping marks it as interacted.
         </p>
       </div>
