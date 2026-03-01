@@ -1,6 +1,7 @@
 import React from "react";
 import { useApp } from "../AppContext.jsx";
 import { getCourses, setCourse, setSettings } from "../data/logic.js";
+import { resetState } from "../data/storage.js";
 
 export default function Settings() {
   const { state, refresh } = useApp();
@@ -65,6 +66,19 @@ export default function Settings() {
         </select>
       </label>
       <button onClick={handleSave}>Save settings</button>
+      <hr style={{ margin: "16px 0", border: "none", borderTop: "1px solid var(--border, #ccc)" }} />
+      <button
+        className="ghost"
+        style={{ color: "crimson" }}
+        onClick={() => {
+          if (window.confirm("Reset all progress? This will clear all learned words, notes, mistakes, and practice history.")) {
+            resetState();
+            window.location.reload();
+          }
+        }}
+      >
+        Reset All Progress
+      </button>
     </div>
   );
 }
