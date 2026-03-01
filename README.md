@@ -234,6 +234,7 @@ Updates for Version 5
 3. Add ranking lists among related users, they are connnect by sign up/in and add friend
 
 Version 5.1 (2026.2.26)
-- Flashcards “New Session” now prioritizes completely unseen words (status=unseen) for each course.
-- If there are not enough unseen words to fill the session, the system falls back to partially seen but not yet learned words, and only then uses learned words for review.
-- This makes each new session feel fresher and reduces repetition of previously seen cards.
+- Expanded word bank from 20 to 70 words; each course now has 25+ words (was 6), enough for 5+ unique sessions.
+- Flashcards selection rewritten: reads fresh state from localStorage (not stale React state), strictly prioritizes unseen words, and immediately marks selected words as "interacted" upon session generation so they are never repeated in the next session.
+- Removed the duplicate "New Session" button at the top of the Flashcards page; only the "Start new session" button after completing a session remains.
+- Added new pro-mode words distributed across all courses.
