@@ -279,22 +279,21 @@ export function selectFlashcardWords(courseId, abilityRank, size, state, proMode
     word,
     state: getWordState(state, courseId, word.id)
   }));
-  // Prefer words the learner has never seen ("unseen") for new sessions.
-  // Fall back to non-learned words when we run out of unseen items.
-  const nonLearned = all.filter((entry) => entry.state.status !== "learned");
-  const unseen = nonLearned.filter((entry) => entry.state.status === "unseen");
-  const basePool =
-    unseen.length >= size
-      ? unseen
-      : unseen.length > 0
-      ? [...unseen, ...nonLearned.filter((entry) => entry.state.status !== "unseen")]
-      : nonLearned;
+  const unseen = all.filter((entry) => entry.state.status === "unseen");
+  const interacted = all.filter((entry) => entry.state.status === "interacted");
   const learned = all.filter((entry) => entry.state.status === "learned");
-  const targetWindow = proMode ? 120 : 80;
-  const filtered = basePool.filter(
-    (entry) => Math.abs(entry.word.difficulty - abilityRank) <= targetWindow
-  );
-  const pool = filtered.length ? filtered : basePool;
+
+  let pool;
+  if (unseen.length >= size) {
+    pool = unseen;
+  } else if (unseen.length > 0) {
+    pool = [...unseen, ...interacted];
+  } else if (interacted.length > 0) {
+    pool = interacted;
+  } else {
+    pool = learned;
+  }
+
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, size).map((entry) => entry.word);
 
