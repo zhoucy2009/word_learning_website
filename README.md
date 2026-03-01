@@ -238,3 +238,14 @@ Version 5.1 (2026.2.26)
 - Flashcards selection rewritten: reads fresh state from localStorage (not stale React state), strictly prioritizes unseen words, and immediately marks selected words as "interacted" upon session generation so they are never repeated in the next session.
 - Removed the duplicate "New Session" button at the top of the Flashcards page; only the "Start new session" button after completing a session remains.
 - Added new pro-mode words distributed across all courses.
+- Removed difficulty window filter from flashcard selection; all course words are now eligible.
+- Added "Reset All Progress" button to Settings page.
+
+Version 5.2 (2026.2.26)
+- Integrated ECDICT open-source English-Chinese dictionary (MIT license, 770k entries) as word data source.
+- Wrote Python extraction script (scripts/extract_words.py) to filter and generate seed data from ECDICT CSV.
+- Word bank expanded to 1022 unique words: each course now has 200 base + 40 pro = 240 words.
+- Every word includes: English definition, Chinese definition, phonetics, and POS — all sourced from ECDICT.
+- Course assignment: IGCSE/IB use Oxford core + Collins + CET tags; IELTS/TOEFL/GRE use ECDICT exam tags directly.
+- Difficulty 150-900 spread evenly per course based on BNC/COCA corpus frequency ranking.
+- Added ecdict.csv to .gitignore (63MB data source, not needed at runtime).
