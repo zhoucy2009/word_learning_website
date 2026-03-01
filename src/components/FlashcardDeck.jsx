@@ -136,7 +136,7 @@ export default function FlashcardDeck({
     <div className="card stack">
       <div className="flex" style={{ justifyContent: "space-between" }}>
         <span className="badge">
-          Card {index + 1} / {sessionWords.length}
+          Card {learnedCount + 1} / {initialCount}
         </span>
         <button className="ghost" onClick={handlePrevious}>
           Previous
