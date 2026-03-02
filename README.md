@@ -241,7 +241,7 @@ Version 5.1 (2026.2.26)
 - Removed difficulty window filter from flashcard selection; all course words are now eligible.
 - Added "Reset All Progress" button to Settings page.
 
-Version 5.2 (2026.2.26)
+Version 5.2 (2026.3.1)
 - Integrated ECDICT open-source English-Chinese dictionary (MIT license, 770k entries) as word data source.
 - Wrote Python extraction script (scripts/extract_words.py) to filter and generate seed data from ECDICT CSV.
 - Word bank expanded to 1022 unique words: each course now has 200 base + 40 pro = 240 words.
